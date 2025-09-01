@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentación de la Aplicación de Scraping</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; margin: 20px; background-color: #f4f4f4; color: #333; }
+        .container { max-width: 900px; margin: auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        h1 { color: #0056b3; text-align: center; margin-bottom: 30px; }
+        pre { background: #eee; padding: 10px; border-radius: 5px; overflow-x: auto; }
+        code { font-family: "Courier New", Courier, monospace; background: #e0e0e0; padding: 2px 4px; border-radius: 3px; }
+        ul { list-style-type: disc; margin-left: 20px; }
+        ol { list-style-type: decimal; margin-left: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 1em; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+
+        /* Accordion Styles */
+        .accordion-item { border: 1px solid #ddd; margin-bottom: 10px; border-radius: 5px; overflow: hidden; }
+        .accordion-header { background-color: #f9f9f9; padding: 15px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+        .accordion-header h2 { margin: 0; color: #333; font-size: 1.2em; }
+        .accordion-header .icon { font-size: 1.5em; transition: transform 0.3s ease; }
+        .accordion-content { padding: 15px; border-top: 1px solid #eee; display: none; }
+        .accordion-item.active .accordion-content { display: block; }
+        .accordion-item.active .accordion-header .icon { transform: rotate(90deg); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Documentación de la Aplicación de Scraping de Productos</h1>
+
+        <div class="accordion-item">
+            <div class="accordion-header">
+                <h2>1. Introducción</h2>
+                <span class="icon">&#9658;</span>
+            </div>
+            <div class="accordion-content">
+                <p>Esta aplicación es un sistema de web scraping diseñado para extraer información de productos de varios sitios de comercio electrónico. La información scrapeada se almacena en una base de datos y se expone a través de una interfaz web, permitiendo la visualización y gestión de los productos y sus proveedores.</p>
+                <p><strong>Propósito Principal:</strong></p>
+                <ul>
+                    <li>Automatizar la recolección de datos de productos de tiendas online.</li>
+                    <li>Almacenar y organizar los datos de productos y proveedores en una base de datos relacional.</li>
+                    <li>Proporcionar una interfaz web para visualizar los productos scrapeados.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="accordion-item">
+            <div class="accordion-header">
+                <h2>2. Estructura del Proyecto</h2>
+                <span class="icon">&#9658;</span>
+            </div>
+            <div class="accordion-content">
+                <pre><code>scraper_app-m/
+├── .env                      # Variables de entorno
+├── .gitignore                # Archivos y directorios a ignorar por Git
+├── app.py                    # Punto de entrada principal de la aplicación Flask
+├── config.py                 # Configuración de la aplicación (ej. base de datos, claves)
+├── mercadolibre_ofertas.html  # Archivo HTML de ejemplo (posiblemente para pruebas)
+├── requirements.txt          # Dependencias de Python del proyecto
+├── run.py                    # Script para ejecutar la aplicación Flask
+├── scheduler.py              # Script para tareas programadas (ej. scraping automático)
+├── __pycache__/              # Caché de bytecode de Python
+├── app/                      # Paquete principal de la aplicación Flask
+│   ├── __init__.py           # Inicialización de la aplicación Flask y la base de datos
+│   ├── models.py             # Definición de los modelos de la base de datos (SQLAlchemy)
+│   ├── routes.py             # Definición de rutas URL y funciones de vista
+│   ├── __pycache__/
+│   ├── services/             # Lógica de negocio y orquestación
+│   │   ├── __init__.py
+│   │   ├── product_service.py  # Lógica para guardar y gestionar productos
+│   │   ├── scraper_service.py  # Orquestador del proceso de scraping
+│   │   ├── __pycache__/
+│   │   └── scrapers/         # Implementaciones específicas de scrapers
+│   │       ├── __init__.py
+│   │       ├── base_scraper.py     # Clase base abstracta para scrapers
+│   │       ├── jamar_scraper_bs.py # Scraper para Jamar (usando BeautifulSoup)
+│   │       ├── jamar_scraper.py    # Scraper para Jamar (posiblemente Selenium, ahora inactivo)
+│   │       ├── mercadolibre_scraper.py # Scraper para MercadoLibre (inactivo)
+│   │       └── __pycache__/
+│   ├── static/               # Archivos estáticos (CSS, JS, imágenes)
+│   │   └── style.css
+│   └── templates/            # Plantillas HTML (Jinja2) para la interfaz de usuario
+│       ├── base.html
+│       ├── index.html
+│       ├── product_detail.html
+│       ├── products.html
+│       ├── supplier_detail.html
+│       └── suppliers.html
+└── tests/                    # Directorio para pruebas (actualmente vacío)
+    └── __init__.py
+</code></pre>
+            </div>
+        </div>
+
+        <div class="accordion-item">
+            <div class="accordion-header">
+                <h2>3. Componentes Clave</h2>
+                <span class="icon">&#9658;</span>
+            </div>
+            <div class="accordion-content">
+                <ul>
+                    <li><strong><code>app.py</code> / <code>run.py</code></strong>: Puntos de entrada de la aplicación Flask.</li>
+                    <li><strong><code>config.py</code></strong>: Centraliza la configuración de la aplicación, incluyendo la URI de la base de datos y la clave secreta.</li>
+                    <li><strong><code>app/__init__.py</code></strong>: Inicializa la aplicación Flask, carga la configuración y configura la instancia de SQLAlchemy.</li>
+                    <li><strong><code>app/models.py</code></strong>: Define los modelos de la base de datos (<code>Product</code> y <code>Supplier</code>) utilizando Flask-SQLAlchemy. Estos modelos mapean las tablas de la base de datos y sus relaciones.</li>
+                    <li><strong><code>app/routes.py</code></strong>: Contiene las funciones de vista que manejan las solicitudes HTTP. Define las rutas para la página de inicio, listado de productos, detalles de productos, listado de proveedores, detalles de proveedores y la activación del proceso de scraping.</li>
+                    <li><strong><code>app/services/scraper_service.py</code></strong>: Actúa como el orquestador del scraping. Contiene la lógica para ejecutar múltiples scrapers y procesar sus resultados, guardándolos en la base de datos.</li>
+                    <li><strong><code>app/services/product_service.py</code></strong>: Contiene funciones para interactuar con la base de datos específicamente para productos, como guardar nuevos productos.</li>
+                    <li><strong><code>app/services/scrapers/</code></strong>:
+                        <ul>
+                            <li><strong><code>base_scraper.py</code></strong>: Define una clase base abstracta (<code>BaseScraper</code>) que proporciona una interfaz común y funcionalidades compartidas (como la obtención de HTML con <code>requests</code> y el parseo con <code>BeautifulSoup</code>) para todos los scrapers específicos.</li>
+                            <li><strong><code>jamar_scraper_bs.py</code></strong>: Implementación concreta de un scraper para el sitio web de Jamar, utilizando BeautifulSoup para extraer datos de productos en oferta.</li>
+                        </ul>
+                    </li>
+                    <li><strong><code>app/templates/</code></strong>: Contiene las plantillas HTML que definen la interfaz de usuario de la aplicación.</li>
+                    <li><strong><code>scheduler.py</code></strong>: Sugiere la capacidad de programar la ejecución del scraping de forma periódica, lo cual es crucial para mantener los datos actualizados.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="accordion-item">
+            <div class="accordion-header">
+                <h2>4. Flujo de la Aplicación</h2>
+                <span class="icon">&#9658;</span>
+            </div>
+            <div class="accordion-content">
+                <ol>
+                    <li><strong>Inicio:</strong> La aplicación se inicia a través de <code>run.py</code> (o <code>app.py</code>), que llama a <code>create_app()</code> en <code>app/__init__.py</code>. Esto configura la aplicación Flask, la base de datos y registra las rutas.</li>
+                    <li><strong>Solicitudes Web:</strong>
+                        <ul>
+                            <li>Cuando un usuario accede a una URL (ej. <code>/products</code>), Flask enruta la solicitud a la función <code>products()</code> en <code>app/routes.py</code>.</li>
+                            <li>Esta función consulta la base de datos para obtener los productos (ordenados por fecha de scrapeo descendente y paginados).</li>
+                            <li>Los datos se pasan a la plantilla <code>products.html</code>, que se renderiza y se envía al navegador del usuario.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Activación del Scraping:</strong>
+                        <ul>
+                            <li>El scraping puede iniciarse manualmente visitando la ruta <code>/scrape</code> en la interfaz web.</li>
+                            <li>Alternativamente, el script <code>scheduler.py</code> puede configurarse para ejecutar el proceso de scraping automáticamente a intervalos definidos.</li>
+                        </ul>
+                    </li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="accordion-item">
+            <div class="accordion-header">
+                <h2>5. Proceso de Scraping</h2>
+                <span class="icon">&#9658;</span>
+            </div>
+            <div class="accordion-content">
+                <p>El proceso de extracción de datos se realiza de la siguiente manera:</p>
+                <ol>
+                    <li><strong>Orquestación (<code>scraper_service.py</code>):</strong>
+                        <ul>
+                            <li>La función <code>run_scrapers()</code> es el punto de entrada para iniciar el scraping.</li>
+                            <li>Itera sobre una lista predefinida de instancias de scrapers (actualmente <code>JamarScraperBS</code> está activo).</li>
+                            <li>Para cada scraper, invoca su método <code>scrape()</code>.</li>
+                            <li>Maneja errores básicos que puedan ocurrir durante el scraping de un sitio específico, registrándolos en la consola.</li>
+                            <li>Los datos de productos devueltos por cada scraper se pasan a la función <code>save_product()</code> en <code>product_service.py</code> para su almacenamiento.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Scrapers Individuales (<code>app/services/scrapers/</code>):</strong>
+                        <ul>
+                            <li>Cada scraper específico (ej. <code>JamarScraperBS</code>) hereda de <code>BaseScraper</code>.</li>
+                            <li><code>BaseScraper</code> proporciona un método <code>_get_soup</code> que utiliza la librería <code>requests</code> para realizar una solicitud HTTP a la URL objetivo y <code>BeautifulSoup</code> para parsear el contenido HTML de la respuesta.</li>
+                            <li>El método <code>scrape()</code> en cada scraper específico:
+                                <ul>
+                                    <li>Define la URL del sitio a scrapear (ej. <code>https://www.jamar.com/collections/sale</code>).</li>
+                                    <li>Obtiene el contenido HTML de la página utilizando <code>_get_soup</code>.</li>
+                                    <li>Utiliza selectores de BeautifulSoup (basados en atributos <code>data-gtm-*</code> en el caso de Jamar) para identificar y extraer los elementos HTML que representan los productos individuales.</li>
+                                    <li>Extrae los datos relevantes de cada producto (nombre, precio, URL, URL de imagen) directamente de los atributos HTML o del texto de los elementos.</li>
+                                    <li>Realiza la limpieza y el formateo de los datos (ej. conversión del precio a tipo flotante).</li>
+                                    <li>Devuelve una lista de diccionarios, donde cada diccionario representa un producto con sus detalles extraídos.</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="accordion-item">
+            <div class="accordion-header">
+                <h2>6. Esquema y Uso de la Base de Datos</h2>
+                <span class="icon">&#9658;</span>
+            </div>
+            <div class="accordion-content">
+                <p>La aplicación utiliza una base de datos relacional (configurada en <code>config.py</code>, típicamente SQLite para desarrollo) gestionada por SQLAlchemy.</p>
+
+                <h3>Modelos (<code>app/models.py</code>):</h3>
+                <ul>
+                    <li><strong><code>Supplier</code></strong>: Representa un proveedor o tienda de donde se obtienen los productos.
+                        <ul>
+                            <li><code>id</code> (Integer, Primary Key)</li>
+                            <li><code>name</code> (String, Unique, Not Null): Nombre del proveedor (ej. 'Jamar', 'MercadoLibre').</li>
+                            <li><code>url</code> (String): URL principal del proveedor.</li>
+                            <li><code>products</code> (Relationship): Relación con los productos asociados a este proveedor.</li>
+                        </ul>
+                    </li>
+                    <li><strong><code>Product</code></strong>: Representa un producto scrapeado.
+                        <ul>
+                            <li><code>id</code> (Integer, Primary Key)</li>
+                            <li><code>name</code> (String, Not Null): Nombre del producto.</li>
+                            <li><code>price</code> (Float, Not Null): Precio del producto.</li>
+                            <li><code>url</code> (String, Unique, Not Null): URL del producto en el sitio de origen.</li>
+                            <li><code>image_url</code> (String): URL de la imagen del producto.</li>
+                            <li><code>description</code> (Text): Descripción del producto.</li>
+                            <li><code>store</code> (String): Nombre de la tienda de donde se obtuvo el producto (redundante con <code>supplier_id</code> pero útil para referencia rápida).</li>
+                            <li><code>supplier_id</code> (Integer, Foreign Key, Not Null): Clave foránea al proveedor asociado.</li>
+                            <li><code>scraped_date</code> (DateTime, Default to UTC Now): Fecha y hora en que el producto fue scrapeado.</li>
+                        </ul>
+                    </li>
+                </ul>
+
+                <h3>Uso de la Base de Datos:</h3>
+                <ul>
+                    <li><strong>Almacenamiento (<code>product_service.py</code>):</strong>
+                        <ul>
+                            <li>La función <code>save_product</code> es responsable de persistir los datos de los productos.</li>
+                            <li>Verifica si el proveedor del producto ya existe en la base de datos; si no, lo crea.</li>
+                            <li>Crea una nueva instancia del modelo <code>Product</code> con los datos scrapeados.</li>
+                            <li>Añade el objeto <code>Product</code> a la sesión de la base de datos y realiza un <code>commit</code> para guardar los cambios.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Recuperación (<code>app/routes.py</code>):</strong>
+                        <ul>
+                            <li>Las rutas de visualización (ej. <code>/products</code>, <code>/product/&lt;id&gt;</code>) consultan la base de datos utilizando los modelos de SQLAlchemy.</li>
+                            <li>Para el listado de productos, se utiliza <code>Product.query.order_by(Product.scraped_date.desc()).paginate(...)</code> para obtener los productos más recientes primero y paginar los resultados eficientemente.</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="accordion-item">
+            <div class="accordion-header">
+                <h2>7. Tecnologías Utilizadas</h2>
+                <span class="icon">&#9658;</span>
+            </div>
+            <div class="accordion-content">
+                <ul>
+                    <li><strong>Backend Framework:</strong> Flask</li>
+                    <li><strong>Base de Datos:</strong> SQLAlchemy (con Flask-SQLAlchemy)</li>
+                    <li><strong>Web Scraping:</strong>
+                        <ul>
+                            <li><code>requests</code>: Para realizar solicitudes HTTP y obtener el contenido de las páginas web.</li>
+                            <li><code>BeautifulSoup4</code>: Para parsear el HTML y extraer datos.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Plantillas:</strong> Jinja2</li>
+                    <li><strong>Gestión de Dependencias:</strong> <code>pip</code> (con <code>requirements.txt</code>)</li>
+                    <li><strong>Control de Versiones:</strong> Git</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="accordion-item">
+            <div class="accordion-header">
+                <h2>8. Configuración y Ejecución</h2>
+                <span class="icon">&#9658;</span>
+            </div>
+            <div class="accordion-content">
+                <p>Para configurar y ejecutar la aplicación (asumiendo Python 3 y <code>pip</code> instalados):</p>
+                <ol>
+                    <li><strong>Clonar el Repositorio:</strong>
+                        <pre><code>git clone https://github.com/steamgap1/scarper.git
+cd scarper
+</code></pre>
+                    </li>
+                    <li><strong>Crear y Activar un Entorno Virtual:</strong>
+                        <pre><code>python -m venv venv
+# En Windows:
+.\venv\Scripts\activate
+# En macOS/Linux:
+source venv/bin/activate
+</code></pre>
+                    </li>
+                    <li><strong>Instalar Dependencias:</strong>
+                        <pre><code>pip install -r requirements.txt
+</code></pre>
+                    </li>
+                    <li><strong>Configurar la Base de Datos:</strong>
+                        <ul>
+                            <li>Asegúrate de que tu <code>config.py</code> tenga la configuración de base de datos deseada (ej. <code>SQLALCHEMY_DATABASE_URI = 'sqlite:///site.db'</code>).</li>
+                            <li>Inicializa la base de datos y crea las tablas:
+                                <pre><code>flask shell
+&gt;&gt;&gt; from app import db, create_app
+&gt;&gt;&gt; app = create_app()
+&gt;&gt;&gt; app.app_context().push()
+&gt;&gt;&gt; db.create_all()
+&gt;&gt;&gt; exit()
+</code></pre>
+                            </li>
+                        </ul>
+                    </li>
+                    <li><strong>Ejecutar la Aplicación:</strong>
+                        <pre><code>python run.py
+</code></pre>
+                        <p>La aplicación estará disponible en <code>http://127.0.0.1:5000/</code> (o el puerto configurado).</p>
+                    </li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="accordion-item">
+            <div class="accordion-header">
+                <h2>9. Mejores Prácticas y Mejoras Futuras</h2>
+                <span class="icon">&#9658;</span>
+            </div>
+            <div class="accordion-content">
+                <h3>Mejores Prácticas Actuales:</h3>
+                <ul>
+                    <li><strong>Modularidad:</strong> Buena separación de componentes (rutas, modelos, servicios, scrapers).</li>
+                    <li><strong>Configuración Externa:</strong> Uso de <code>config.py</code> y <code>.env</code> para la configuración.</li>
+                    <li><strong>ORM:</strong> Uso de SQLAlchemy para la interacción con la base de datos.</li>
+                    <li><strong>Scrapers Abstraídos:</strong> La clase <code>BaseScraper</code> promueve la reutilización de código y la extensibilidad para nuevos sitios.</li>
+                </ul>
+
+                <h3>Mejoras Futuras Sugeridas:</h3>
+                <ul>
+                    <li><strong>Logging Robusto:</strong> Implementar un sistema de logging adecuado (módulo <code>logging</code> de Python) para una mejor depuración y monitoreo en producción.</li>
+                    <li><strong>Manejo de Errores Avanzado:</strong> Implementar un manejo de errores más sofisticado, incluyendo excepciones personalizadas y posibles integraciones con servicios de monitoreo de errores.</li>
+                    <li><strong>Pruebas Exhaustivas:</strong> Desarrollar pruebas unitarias y de integración para todos los componentes críticos de la aplicación (scrapers, servicios, rutas, modelos).</li>
+                    <li><strong>Asincronía en Scraping:</strong> Para mejorar la eficiencia y velocidad del scraping de múltiples fuentes, considerar la implementación de operaciones asíncronas (ej. <code>asyncio</code>, <code>httpx</code>).</li>
+                    <li><strong>Autenticación/Autorización:</strong> Si la aplicación va a ser utilizada por múltiples usuarios o requiere acceso restringido, implementar un sistema de autenticación y autorización.</li>
+                    <li><strong>Despliegue Continuo:</strong> Configurar un pipeline de CI/CD para automatizar las pruebas y el despliegue de la aplicación.</li>
+                    <li><strong>Manejo de Proxies/User-Agents:</strong> Para evitar bloqueos durante el scraping, implementar rotación de proxies y user-agents.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const accordionHeaders = document.querySelectorAll('.accordion-header');
+
+            accordionHeaders.forEach(header => {
+                header.addEventListener('click', function() {
+                    const accordionItem = this.parentNode;
+                    accordionItem.classList.toggle('active');
+                });
+            });
+        });
+    </script>
+</body>
+</html>

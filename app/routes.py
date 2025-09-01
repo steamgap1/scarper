@@ -35,4 +35,7 @@ def scrape():
         flash('¡Scraping completado con éxito!', 'success')
     except Exception as e:
         flash(f'Ocurrió un error durante el scraping: {e}', 'danger')
-    return redirect(url_for('products'))
+    
+@current_app.route('/documentation')
+def documentation():
+    return render_template('documentation.html')
