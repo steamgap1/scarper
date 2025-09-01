@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %}Proveedores - Mi Scraper App{% endblock %}
+
+{% block content %}
+    <h1>Proveedores</h1>
+    <div class="supplier-list">
+        {% for supplier in suppliers %}
+            <div class="supplier-item">
+                <h2><a href="{{ url_for('supplier_detail', supplier_id=supplier.id) }}">{{ supplier.name }}</a></h2>
+                <p>{{ supplier.products|length }} productos</p>
+            </div>
+        {% else %}
+            <p>No hay proveedores para mostrar. Ejecuta el scraper para empezar.</p>
+        {% endfor %}
+    </div>
+{% endblock %}

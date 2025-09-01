@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Mi Scraper App{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <nav>
+        <a href="{{ url_for('index') }}">Inicio</a>
+        <a href="{{ url_for('products') }}">Productos</a>
+        <a href="{{ url_for('suppliers') }}">Proveedores</a>
+        <a href="{{ url_for('scrape') }}" class="button-scrape" id="scrape-button">Ejecutar Scraper</a>
+        <span id="loading-indicator" style="display:none; margin-left: 10px; color: #555;">Cargando...</span>
+    </nav>
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const scrapeButton = document.getElementById('scrape-button');
+            const loadingIndicator = document.getElementById('loading-indicator');
+
+            if (scrapeButton) {
+                scrapeButton.addEventListener('click', function(event) {
+                    // Evitar múltiples clics
+                    if (scrapeButton.classList.contains('disabled')) {
+                        event.preventDefault();
+                        return;
+                    }
+
+                    scrapeButton.classList.add('disabled');
+                    scrapeButton.textContent = 'Ejecutando...';
+                    loadingIndicator.style.display = 'inline';
+                });
+
+                // Si la página se recarga y el scraper ya se ejecutó, restaurar el estado
+                // Esto es útil si el usuario vuelve a la página después de un scrape
+                if (window.performance && window.performance.navigation.type === window.performance.navigation.TYPE_NAVIGATE) {
+                    scrapeButton.classList.remove('disabled');
+                    scrapeButton.textContent = 'Ejecutar Scraper';
+                    loadingIndicator.style.display = 'none';
+                }
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block title %}Productos - Mi Scraper App{% endblock %}
+
+{% block content %}
+    <h1>Productos Scrapeados</h1>
+
+    <table class="product-table">
+        <thead>
+            <tr>
+                <th>Imagen</th>
+                <th>Nombre</th>
+                <th>Precio</th>
+                <th>Tienda</th>
+                <th>Proveedor</th>
+                <th>Fecha Scrapeo</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in products_pagination.items %}
+            <tr>
+                <td>
+                    {% if product.image_url %}
+                        <img src="{{ product.image_url }}" alt="{{ product.name }}" style="width:50px; height:auto;">
+                    {% endif %}
+                </td>
+                <td><a href="{{ url_for('product_detail', product_id=product.id) }}">{{ product.name }}</a></td>
+                <td>${{ "{:,.2f}".format(product.price) }}</td>
+                <td>{{ product.store }}</td>
+                <td><a href="{{ url_for('supplier_detail', supplier_id=product.supplier.id) }}">{{ product.supplier.name }}</a></td>
+                <td>{{ product.scraped_date.strftime('%Y-%m-%d %H:%M') }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="6">No hay productos para mostrar. Ejecuta el scraper para empezar.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="pagination">
+        {% if products_pagination.has_prev %}
+            <a href="{{ url_for('products', page=products_pagination.prev_num) }}">Anterior</a>
+        {% endif %}
+        
+        {% for page_num in products_pagination.iter_pages() %}
+            {% if page_num %}
+                {% if products_pagination.page == page_num %}
+                    <span class="current-page">{{ page_num }}</span>
+                {% else %}
+                    <a href="{{ url_for('products', page=page_num) }}">{{ page_num }}</a>
+                {% endif %}
+            {% else %}
+                ...
+            {% endif %}
+        {% endfor %}
+
+        {% if products_pagination.has_next %}
+            <a href="{{ url_for('products', page=products_pagination.next_num) }}">Siguiente</a>
+        {% endif %}
+    </div>
+{% endblock %}

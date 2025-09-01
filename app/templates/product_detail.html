@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ product.name }} - Mi Scraper App{% endblock %}
+
+{% block content %}
+    <h1>{{ product.name }}</h1>
+    <p><strong>Precio:</strong> ${{ product.price }}</p>
+    <p><strong>Tienda:</strong> {{ product.store }}</p>
+    <p><strong>Proveedor:</strong> <a href="{{ url_for('supplier_detail', supplier_id=product.supplier.id) }}">{{ product.supplier.name }}</a></p>
+    {% if product.image_url %}
+        <img src="{{ product.image_url }}" alt="{{ product.name }}" width="300">
+    {% endif %}
+    <p><strong>Descripción:</strong></p>
+    <p>{{ product.description or 'No disponible' }}</p>
+    <a href="{{ product.url }}" target="_blank">Ver en la tienda</a>
+{% endblock %}

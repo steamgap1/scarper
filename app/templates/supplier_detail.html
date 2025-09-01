@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ supplier.name }} - Mi Scraper App{% endblock %}
+
+{% block content %}
+    <h1>Productos de {{ supplier.name }}</h1>
+    {% if supplier.url %}
+        <p><a href="{{ supplier.url }}" target="_blank">Visitar tienda del proveedor</a></p>
+    {% endif %}
+
+    <div class="product-list">
+        {% for product in supplier.products %}
+            <div class="product-item">
+                <h2><a href="{{ url_for('product_detail', product_id=product.id) }}">{{ product.name }}</a></h2>
+                <p>Precio: ${{ product.price }}</p>
+                <p>Tienda: {{ product.store }}</p>
+            </div>
+        {% else %}
+            <p>Este proveedor no tiene productos registrados.</p>
+        {% endfor %}
+    </div>
+{% endblock %}
