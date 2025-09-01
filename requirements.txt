@@ -8,3 +8,4 @@ selenium
 webdriver-manager
 PyMySQL
 undetected-chromedriver
+Flask-Migrate
