@@ -8,7 +8,6 @@ def scheduled_job():
 
 if __name__ == "__main__":
     scheduler = BlockingScheduler()
-    # Programa la ejecución cada 24 horas
     scheduler.add_job(scheduled_job, 'interval', hours=24)
     
     print("Scheduler iniciado. Presiona Ctrl+C para detener.")
